@@ -1,48 +1,57 @@
 var app = angular.module('ReferencesApp', []);
 
-app.service('posts', function($http) {
+app.factory('posts', function($http) {
 
-    this.create = function(text) {
-        return $http.post('/posts', { text: text });
+    var self = {
+        list: [],
+    };
+
+    self.create = function(text) {
+        return $http.post('/posts', { text: text }).success(function(res) {
+            self.list.push({ text: text });
+        });
     }
 
-    this.list = function() {
-        return $http.get('/posts');
+    self.fetch = function() {
+        return $http.get('/posts').success(function(posts) {
+            return self.list = posts;
+        });
     }
 
+    return self;
 })
 
-app.controller('submitCtrl', function($rootScope, $scope, posts) {
+app.factory('notification', function() {
+    return {
+        active: false,
+        type: null,
+        message: '' ,
+        set: function(type, message) {
+            this.active = true;
+            this.message = message;
+            this.type = type;
+        },
+        clear: function() {
+            this.active = false;
+        }
+    };
+});
+
+app.controller('submitCtrl', function($scope, posts, notification) {
     $scope.submit = function() {
         posts.create($scope.text).success(function(res) {
-            $rootScope.$emit('post_submited.success', res.message);
+            notification.set('success', res.message);
         }).error(function(err) {
-            $rootScope.$emit('post_submited.error', err.message);
+            notification.set('error', err.message);
         });
     }
 })
 
-app.controller('listCtrl', function($rootScope, $scope, posts) {
-    $rootScope.$on('post_submited.success', function() {
-        $scope.list();
-    })
-
-    $scope.list = function() {
-        posts.list().success(function(posts) {
-            $scope.posts = posts;
-        })
-    }
-
-    $scope.list();
+app.controller('listCtrl', function($scope, posts) {
+    $scope.posts = posts;
+    posts.fetch();
 })
 
-app.controller('notificationCtrl', function($rootScope, $scope) {
-    // $rootScope.$on('post_submited.success', function(ev, text) {
-    //     $scope.notificationType = 'success';
-    //     $scope.notification = text;
-    // })
-    $rootScope.$on('post_submited.error', function(ev, err) {
-        $scope.notificationType = 'error';
-        $scope.notification = err;
-    })
+app.controller('notificationCtrl', function($scope, notification) {
+    $scope.notification = notification;
 })

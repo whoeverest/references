@@ -15,9 +15,9 @@
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
         
-        <div ng-controller="notificationCtrl" ng-show="notification" class="alert alert-dismissable alert-{{notificationType}}">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            {{ notification }}
+        <div ng-controller="notificationCtrl" ng-show="notification.active" class="alert alert-dismissable alert-{{notification.type}}">
+            <button type="button" class="close" ng-click="notification.clear()" aria-hidden="true">&times;</button>
+            {{ notification.message }}
         </div>
 
         <h1>References</h1>
@@ -30,7 +30,7 @@
 
         <h3>Posts</h3>
         <div ng-controller="listCtrl">
-            <div ng-repeat="post in posts">{{ post.text }}</div>
+            <div ng-repeat="post in posts.list">{{ post.text }}</div>
         </div>
 
     </div>
