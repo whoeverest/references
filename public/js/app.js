@@ -37,10 +37,10 @@ app.controller('listCtrl', function($rootScope, $scope, posts) {
 })
 
 app.controller('notificationCtrl', function($rootScope, $scope) {
-    $rootScope.$on('post_submited.success', function(ev, text) {
-        $scope.notificationType = 'success';
-        $scope.notification = text;
-    })
+    // $rootScope.$on('post_submited.success', function(ev, text) {
+    //     $scope.notificationType = 'success';
+    //     $scope.notification = text;
+    // })
     $rootScope.$on('post_submited.error', function(ev, err) {
         $scope.notificationType = 'error';
         $scope.notification = err;
